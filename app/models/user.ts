@@ -38,11 +38,17 @@ export default class User extends compose(BaseModel, AuthFinder) {
     @column.dateTime({ autoCreate: true, autoUpdate: true })
     declare updatedAt: DateTime | null;
 
-    static accessTokens = DbAccessTokensProvider.forModel(User);
-
     @manyToMany(() => Project)
     declare projects: ManyToMany<typeof Project>;
 
     @manyToMany(() => Skill)
     declare skills: ManyToMany<typeof Skill>;
+
+    static accessTokens = DbAccessTokensProvider.forModel(User, {
+        expiresIn: '30 days',
+        prefix: 'oat_',
+        table: 'auth_access_tokens',
+        type: 'auth_token',
+        tokenSecretLength: 40,
+    });
 }
