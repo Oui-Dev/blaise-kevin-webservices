@@ -3,10 +3,27 @@ import { createValidator, updateValidator } from '#validators/user';
 import User from '#models/user';
 
 export default class UsersController {
-    public async index({ response }: HttpContext) {
-        const users = await User.query().preload('skills');
+    public async index({ request, response }: HttpContext) {
+        let query = User.query();
 
-        return response.ok(users);
+        // if the request provide an array of skills id
+        if (request.input('skills_filter')) {
+            query = query.whereHas('skills', builder => {
+                builder.whereIn('skills.id', [...request.input('skills_filter')]);
+            });
+        }
+
+        if (request.input('limit')) {
+            query = query.limit(request.input('limit'));
+        }
+
+        if (request.input('order')) {
+            if (request.input('order') !== 'asc' || request.input('order') !== 'desc') return;
+            query = query.orderBy('created_at', request.input('order'));
+        }
+
+        const developpers = await query.preload('skills').exec();
+        return response.ok(developpers);
     }
 
     public async show({ params, response }: HttpContext) {

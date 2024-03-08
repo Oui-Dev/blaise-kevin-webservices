@@ -3,15 +3,32 @@ import { createValidator, updateValidator } from '#validators/project';
 import Project from '#models/project';
 
 export default class ProjectsController {
-    public async index({ response }: HttpContext) {
-        const projects = await Project.query().preload('users');
+    public async index({ request, response }: HttpContext) {
+        let query = Project.query();
 
+        // if the request provide an array of users id
+        if (request.input('users_filter')) {
+            query = query.whereHas('users', builder => {
+                builder.whereIn('users.id', [...request.input('users_filter')]);
+            });
+        }
+
+        if (request.input('limit')) {
+            query = query.limit(request.input('limit'));
+        }
+
+        if (request.input('order')) {
+            if (request.input('order') !== 'asc' || request.input('order') !== 'desc') return;
+            query = query.orderBy('created_at', request.input('order'));
+        }
+
+        const projects = await query.preload('users').exec();
         return response.ok(projects);
     }
 
     async latests({ response }: HttpContext) {
-        const projects = await Project.query().limit(3).orderBy('created_at', 'desc').preload('users')
-        return response.ok(projects)
+        const projects = await Project.query().limit(3).orderBy('created_at', 'desc').preload('users');
+        return response.ok(projects);
     }
 
     public async show({ params, response }: HttpContext) {
