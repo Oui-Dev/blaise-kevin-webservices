@@ -60,7 +60,7 @@ router
                             })
                             .prefix('/skills');
                     })
-                    .use(middleware.userIsAdmin());
+                    .use(middleware.userHasRole({ roles: ['admin'] }));
             })
             .use(
                 middleware.auth({
