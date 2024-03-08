@@ -4,7 +4,7 @@ import hash from '@adonisjs/core/services/hash';
 import { compose } from '@adonisjs/core/helpers';
 import { AccessToken } from '@adonisjs/auth/access_tokens';
 import type { ManyToMany, BelongsTo } from '@adonisjs/lucid/types/relations';
-import { BaseModel, column, manyToMany, belongsTo } from '@adonisjs/lucid/orm';
+import { BaseModel, column, manyToMany, belongsTo, computed } from '@adonisjs/lucid/orm';
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens';
 import Project from '#models/project';
 import Skill from '#models/skill';
@@ -28,7 +28,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
     @column()
     declare email: string;
 
-    @column()
+    @column({ serializeAs: null })
     declare password: string;
 
     @column()
@@ -39,6 +39,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
     @column.dateTime({ autoCreate: true, autoUpdate: true })
     declare updatedAt: DateTime | null;
+
+    @computed()
+    get fullName() {
+        return `${this.firstName} ${this.lastName}`;
+    }
 
     @manyToMany(() => Project)
     declare projects: ManyToMany<typeof Project>;
