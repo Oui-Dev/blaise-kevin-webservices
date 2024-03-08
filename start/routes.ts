@@ -18,6 +18,7 @@ router
     .group(() => {
         // Public routes
         router.get('projects/', [ProjectsController, 'index']);
+        router.get('projects/latests/', [ProjectsController, 'latests']);
         router.post('auth/login', [AuthController, 'login']);
 
         // Authenticated routes

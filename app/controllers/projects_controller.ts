@@ -9,6 +9,11 @@ export default class ProjectsController {
         return response.ok(projects);
     }
 
+    async latests({ response }: HttpContext) {
+        const projects = await Project.query().limit(3).orderBy('created_at', 'desc').preload('users')
+        return response.ok(projects)
+    }
+
     public async show({ params, response }: HttpContext) {
         const project = await Project.findOrFail(params.id);
         await project.load('users');
