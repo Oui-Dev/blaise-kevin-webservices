@@ -2,8 +2,11 @@ import { DateTime } from 'luxon';
 import { withAuthFinder } from '@adonisjs/auth';
 import hash from '@adonisjs/core/services/hash';
 import { compose } from '@adonisjs/core/helpers';
-import { BaseModel, column } from '@adonisjs/lucid/orm';
+import type { ManyToMany } from '@adonisjs/lucid/types/relations';
+import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm';
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens';
+import Project from '#models/project';
+import Skill from '#models/skill';
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
     uids: ['email'],
@@ -15,13 +18,19 @@ export default class User extends compose(BaseModel, AuthFinder) {
     declare id: number;
 
     @column()
-    declare fullName: string | null;
+    declare firstName: string;
+
+    @column()
+    declare lastName: string;
 
     @column()
     declare email: string;
 
     @column()
     declare password: string;
+
+    @column()
+    declare isAdmin: boolean;
 
     @column.dateTime({ autoCreate: true })
     declare createdAt: DateTime;
@@ -30,4 +39,10 @@ export default class User extends compose(BaseModel, AuthFinder) {
     declare updatedAt: DateTime | null;
 
     static accessTokens = DbAccessTokensProvider.forModel(User);
+
+    @manyToMany(() => Project)
+    declare projects: ManyToMany<typeof Project>;
+
+    @manyToMany(() => Skill)
+    declare skills: ManyToMany<typeof Skill>;
 }
