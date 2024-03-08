@@ -6,7 +6,7 @@ export default class UserIsAdminMiddleware {
         if (ctx.auth.user?.isAdmin) {
             return next();
         }
-        
+
         return ctx.response.forbidden({ error: 'You are not authorized to access this resource' });
     }
 }

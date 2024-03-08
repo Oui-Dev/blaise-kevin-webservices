@@ -15,5 +15,21 @@ export default class AuthController {
         });
     }
 
-    public async logout({}: HttpContext) {}
+    public async logout({ auth, response }: HttpContext) {
+        const tokenId = auth.user?.currentAccessToken.identifier;
+
+        // Not mandatory due to middleware.auth but i keep it for safety
+        if (!tokenId) {
+            return response.badRequest({
+                message: 'Invalid token',
+            });
+        }
+
+        const user = await User.findOrFail(auth.user?.id);
+        await User.accessTokens.delete(user, tokenId);
+
+        return response.ok({
+            message: 'User logged out',
+        });
+    }
 }

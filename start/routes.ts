@@ -18,19 +18,13 @@ router
     .group(() => {
         // Public routes
         router.get('projects/', [ProjectsController, 'index']);
-
-        // Auth routes
-        router
-            .group(() => {
-                router.post('/login', [AuthController, 'login']);
-                router.post('/logout', [AuthController, 'logout']);
-            })
-            .prefix('/auth');
+        router.post('auth/login', [AuthController, 'login']);
 
         // Authenticated routes
         router
             .group(() => {
                 router.get('users/', [UsersController, 'index']);
+                router.post('auth/logout', [AuthController, 'logout']);
 
                 // Admin routes
                 router

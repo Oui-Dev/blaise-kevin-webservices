@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { withAuthFinder } from '@adonisjs/auth';
 import hash from '@adonisjs/core/services/hash';
 import { compose } from '@adonisjs/core/helpers';
+import { AccessToken } from '@adonisjs/auth/access_tokens';
 import type { ManyToMany } from '@adonisjs/lucid/types/relations';
 import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm';
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens';
@@ -43,6 +44,8 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
     @manyToMany(() => Skill)
     declare skills: ManyToMany<typeof Skill>;
+
+    currentAccessToken?: AccessToken;
 
     static accessTokens = DbAccessTokensProvider.forModel(User, {
         expiresIn: '30 days',
