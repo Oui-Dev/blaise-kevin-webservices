@@ -29,11 +29,7 @@ export const updateValidator = vine.compile(
             .minLength(3)
             .maxLength(254)
             .unique(async (db, value, field) => {
-                const project = await db
-                    .from('projects')
-                    .where('name', value)
-                    .whereNot('id', field.data.id)
-                    .first();
+                const project = await db.from('projects').where('name', value).whereNot('id', field.data.id).first();
                 return !project;
             }),
         users: vine
